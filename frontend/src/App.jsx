@@ -161,7 +161,7 @@ function App() {
               </div>
               <div className="field field-time">
                 <label htmlFor="cTime">Hora</label>
-                <input id="cTime" type="time" value={customTime}
+                <input id="cTime" type="time" value={customTime} step="60"
                   onChange={(e) => setCustomTime(e.target.value)} />
               </div>
             </div>
