@@ -28,7 +28,7 @@ body {
 }
 
 .app {
-  max-width: 720px;
+  max-width: 850px;
   margin: 0 auto;
   padding: 48px 24px;
 }
@@ -291,4 +291,74 @@ input:focus {
     padding: 10px 12px;
     font-size: 0.75rem;
   }
+}
+
+/* Log de peticiones */
+.log-card { margin-bottom: 48px; }
+
+.log-entry {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+}
+
+.log-entry:last-child { border-bottom: none; }
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.log-time {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-family: var(--font-sans);
+}
+
+.log-method {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #1F6C9F;
+  background: #E1F3FE;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.log-url {
+  font-family: 'SF Mono', 'Geist Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text);
+  background: var(--bg);
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  word-break: break-all;
+}
+
+.log-response {
+  font-family: 'SF Mono', 'Geist Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  background: #F9F9F8;
+  padding: 6px 8px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.log-empty {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 24px 0;
+}
+
+/* Time input más angosto */
+.field-time input {
+  width: 100%;
 }

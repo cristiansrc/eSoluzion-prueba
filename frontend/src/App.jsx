@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 
 const TEST_CASES = [
   { id: 'T1', date: '2020-06-14T10:00:00', product: '35455', brand: '1', expected: '35.50€', priceList: 1 },
@@ -8,36 +8,52 @@ const TEST_CASES = [
   { id: 'T5', date: '2020-06-16T21:00:00', product: '35455', brand: '1', expected: '38.95€', priceList: 4 },
 ]
 
+function formatDate(iso) {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+}
+
 function App() {
   const [results, setResults] = useState({})
   const [loading, setLoading] = useState({})
   const [errors, setErrors] = useState({})
-  const [customDate, setCustomDate] = useState('2020-06-14T10:00:00')
+  const [customDate, setCustomDate] = useState('2020-06-14')
+  const [customTime, setCustomTime] = useState('10:00')
   const [customProduct, setCustomProduct] = useState('35455')
   const [customBrand, setCustomBrand] = useState('1')
   const [customResult, setCustomResult] = useState(null)
   const [customError, setCustomError] = useState(null)
   const [customLoading, setCustomLoading] = useState(false)
+  const [log, setLog] = useState([])
+  const logEndRef = useRef(null)
+
+  const addLog = (entry) => {
+    setLog(prev => [entry, ...prev])
+    setTimeout(() => logEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
+  }
 
   const executeTest = async (tc) => {
     setLoading(prev => ({ ...prev, [tc.id]: true }))
     setErrors(prev => ({ ...prev, [tc.id]: null }))
 
     try {
-      const params = new URLSearchParams({
-        applicationDate: tc.date,
-        productId: tc.product,
-        brandId: tc.brand
-      })
-      const response = await fetch(`/api/prices?${params}`)
+      const params = new URLSearchParams({ applicationDate: tc.date, productId: tc.product, brandId: tc.brand })
+      const url = `/api/prices?${params}`
+      const response = await fetch(url)
+      let data, errorMsg
       if (!response.ok) {
         const errData = await response.json().catch(() => null)
-        throw new Error(errData?.message || `Error ${response.status}`)
+        errorMsg = errData?.message || `Error ${response.status}`
+        throw new Error(errorMsg)
       }
-      const data = await response.json()
+      data = await response.json()
       setResults(prev => ({ ...prev, [tc.id]: data }))
+      addLog({ time: new Date().toLocaleTimeString(), method: 'GET', url, response: JSON.stringify(data, null, 2), test: tc.id })
     } catch (err) {
       setErrors(prev => ({ ...prev, [tc.id]: err.message }))
+      addLog({ time: new Date().toLocaleTimeString(), method: 'GET', url: `/api/prices?applicationDate=${tc.date}&productId=${tc.product}&brandId=${tc.brand}`, response: `ERROR: ${err.message}`, test: tc.id, isError: true })
     } finally {
       setLoading(prev => ({ ...prev, [tc.id]: false }))
     }
@@ -55,21 +71,24 @@ function App() {
     setCustomError(null)
     setCustomResult(null)
 
+    const applicationDate = `${customDate}T${customTime}:00`
+
     try {
-      const params = new URLSearchParams({
-        applicationDate: customDate,
-        productId: customProduct,
-        brandId: customBrand
-      })
-      const response = await fetch(`/api/prices?${params}`)
+      const params = new URLSearchParams({ applicationDate, productId: customProduct, brandId: customBrand })
+      const url = `/api/prices?${params}`
+      const response = await fetch(url)
+      let data, errorMsg
       if (!response.ok) {
         const errData = await response.json().catch(() => null)
-        throw new Error(errData?.message || `Error ${response.status}`)
+        errorMsg = errData?.message || `Error ${response.status}`
+        throw new Error(errorMsg)
       }
-      const data = await response.json()
+      data = await response.json()
       setCustomResult(data)
+      addLog({ time: new Date().toLocaleTimeString(), method: 'GET', url, response: JSON.stringify(data, null, 2), test: 'Custom' })
     } catch (err) {
       setCustomError(err.message)
+      addLog({ time: new Date().toLocaleTimeString(), method: 'GET', url: `/api/prices?applicationDate=${applicationDate}&productId=${customProduct}&brandId=${customBrand}`, response: `ERROR: ${err.message}`, test: 'Custom', isError: true })
     } finally {
       setCustomLoading(false)
     }
@@ -122,12 +141,8 @@ function App() {
                    result ? <span className="tag tag-red">✗ Fallo</span> :
                    <span className="tag" style={{ background: '#F0F0F0', color: '#999' }}>Pendiente</span>}
                 </span>
-                <button
-                  className="test-btn"
-                  onClick={() => executeTest(tc)}
-                  disabled={isLoading}
-                  style={{ padding: '4px 12px', fontSize: '0.75rem' }}
-                >
+                <button className="test-btn" onClick={() => executeTest(tc)} disabled={isLoading}
+                  style={{ padding: '4px 12px', fontSize: '0.75rem' }}>
                   {isLoading ? '...' : 'Ejecutar'}
                 </button>
               </div>
@@ -141,20 +156,27 @@ function App() {
         <div className="card form-card">
           <h2 className="card-title">Consulta personalizada</h2>
           <form onSubmit={handleCustomSubmit}>
-            <div className="field">
-              <label htmlFor="date">Fecha y hora</label>
-              <input id="date" type="text" value={customDate}
-                onChange={(e) => setCustomDate(e.target.value)} />
+            <div className="field-row">
+              <div className="field">
+                <label htmlFor="cDate">Fecha</label>
+                <input id="cDate" type="date" value={customDate}
+                  onChange={(e) => setCustomDate(e.target.value)} />
+              </div>
+              <div className="field field-time">
+                <label htmlFor="cTime">Hora</label>
+                <input id="cTime" type="time" value={customTime}
+                  onChange={(e) => setCustomTime(e.target.value)} />
+              </div>
             </div>
             <div className="field-row">
               <div className="field">
-                <label htmlFor="product">Producto</label>
-                <input id="product" type="text" value={customProduct}
+                <label htmlFor="cProduct">Producto</label>
+                <input id="cProduct" type="number" value={customProduct}
                   onChange={(e) => setCustomProduct(e.target.value)} />
               </div>
               <div className="field">
-                <label htmlFor="brand">Cadena</label>
-                <input id="brand" type="text" value={customBrand}
+                <label htmlFor="cBrand">Cadena</label>
+                <input id="cBrand" type="number" value={customBrand}
                   onChange={(e) => setCustomBrand(e.target.value)} />
               </div>
             </div>
@@ -190,7 +212,7 @@ function App() {
                 </div>
                 <div className="detail-item">
                   <span className="detail-label">Vigencia</span>
-                  <span className="detail-value">{customResult.startDate} → {customResult.endDate}</span>
+                  <span className="detail-value">{formatDate(customResult.startDate)} → {formatDate(customResult.endDate)}</span>
                 </div>
                 <div className="detail-item">
                   <span className="detail-label">Moneda</span>
@@ -203,6 +225,23 @@ function App() {
             <p className="muted">Completa los parámetros y consulta un precio.</p>
           )}
         </div>
+      </div>
+
+      {/* Log de peticiones */}
+      <div className="card log-card">
+        <h2 className="card-title">Historial de peticiones</h2>
+        {log.length === 0 && <p className="log-empty">Aún no se han realizado peticiones.</p>}
+        {log.map((entry, i) => (
+          <div key={i} className="log-entry">
+            <div className="log-header">
+              <span className="log-method">{entry.method}</span>
+              <span className="log-time">{entry.time} · {entry.test}</span>
+            </div>
+            <div className="log-url">{entry.url}</div>
+            <div className="log-response" style={entry.isError ? { color: '#9F2F2D' } : {}}>{entry.response}</div>
+          </div>
+        ))}
+        <div ref={logEndRef} />
       </div>
 
       <footer className="footer">
