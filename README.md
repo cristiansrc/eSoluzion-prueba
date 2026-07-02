@@ -129,6 +129,36 @@ cd backend
 ./gradlew test
 ```
 
+### Cobertura JaCoCo
+
+```bash
+cd backend
+./gradlew jacocoTestCoverageVerification
+```
+
+El reporte HTML de cobertura se genera en:
+```
+backend/build/reports/jacoco/test/html/index.html
+```
+
+**Cobertura actual:** 100% (instrucciones) en clases testeables.
+
+> Exclusiones JaCoCo: DTOs generados, entidades JPA, configuración, excepciones,
+> mappers MapStruct, clases de aplicación Spring Boot, interfaces generadas,
+> handlers de error y clases de ayuda.
+
+---
+
+## Tests del Frontend
+
+El frontend no incluye tests automatizados en este incremento.
+Para verificarlo, ejecutar el build:
+
+```bash
+cd frontend
+npm run build
+```
+
 ---
 
 ## Arquitectura del Backend
