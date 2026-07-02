@@ -3,13 +3,16 @@ WORKDIR /app
 
 # Copiar archivos de build
 COPY backend/build.gradle.kts backend/settings.gradle.kts ./
-COPY backend/gradlew backend/gradlew ./
+COPY backend/gradlew ./
 COPY backend/gradle ./gradle
 
 # Copiar código fuente
 COPY backend/src ./src
 
-# Copiar OpenAPI spec para generación de código
+# Crear directorio para el spec (el plugin espera ${rootDir}/../docs/api/pricing-api.yaml)
+RUN mkdir -p /docs/api
+COPY docs/api/pricing-api.yaml /docs/api/pricing-api.yaml
+# Copiar también a resources para runtime
 COPY docs/api/pricing-api.yaml ./src/main/resources/openapi.yaml
 
 # Descargar dependencias y compilar (sin tests)
@@ -19,8 +22,8 @@ RUN ./gradlew build --no-daemon -x test
 FROM eclipse-temurin:21-jre-alpine AS runtime
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=builder /app/build/libs/*.jar ./
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "pricing-api-1.0.0.jar"]
