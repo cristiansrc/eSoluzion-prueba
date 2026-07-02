@@ -1,0 +1,286 @@
+openapi: 3.0.3
+
+info:
+  title: Pricing API
+  description: |
+    API de consulta de tarifas/precios de productos para cadenas de comercio electrónico.
+    Permite determinar el precio aplicable a un producto de una cadena comercial en una
+    fecha y hora específicas, aplicando reglas de prioridad y vigencia temporal.
+  version: 1.0.0
+  contact:
+    name: eSoluzion Development Team
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: http://localhost:{port}
+    description: Docker Compose deployment
+    variables:
+      port:
+        default: "8080"
+
+tags:
+  - name: Prices
+    description: Consulta de precios aplicables por fecha, producto y cadena.
+
+paths:
+  /api/prices:
+    get:
+      operationId: getApplicablePrice
+      tags:
+        - Prices
+      summary: Consultar precio aplicable
+      description: |
+        Determina la tarifa de precio aplicable para un producto de una cadena comercial
+        en una fecha y hora específicas.
+
+        **Reglas de negocio:**
+        - Una tarifa es vigente si `startDate <= applicationDate <= endDate`.
+        - Si múltiples tarifas son vigentes, se aplica la de mayor `priority`.
+        - Si no hay tarifas vigentes, se retorna 404.
+      parameters:
+        - $ref: '#/components/parameters/ApplicationDateParam'
+        - $ref: '#/components/parameters/ProductIdParam'
+        - $ref: '#/components/parameters/BrandIdParam'
+      responses:
+        '200':
+          $ref: '#/components/responses/PriceSuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+components:
+  parameters:
+    ApplicationDateParam:
+      name: applicationDate
+      in: query
+      required: true
+      description: |
+        Fecha y hora para la cual se consulta el precio aplicable.
+        Formato ISO-8601. Opcionalmente puede incluir sufijo `Z` (UTC). Ej: `2020-06-14T10:00:00` o `2020-06-14T10:00:00Z`.
+      schema:
+        type: string
+        format: date-time
+      example: "2020-06-14T10:00:00Z"
+
+    ProductIdParam:
+      name: productId
+      in: query
+      required: true
+      description: Identificador del producto a consultar.
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+      example: 35455
+
+    BrandIdParam:
+      name: brandId
+      in: query
+      required: true
+      description: Identificador de la cadena comercial (1 = ZARA).
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+      example: 1
+
+  schemas:
+    PriceResponse:
+      type: object
+      description: Respuesta con la tarifa de precio aplicable para un producto, cadena y fecha.
+      required:
+        - productId
+        - brandId
+        - priceList
+        - startDate
+        - endDate
+        - price
+        - currency
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: Identificador del producto.
+          example: 35455
+        brandId:
+          type: integer
+          format: int64
+          description: Identificador de la cadena comercial.
+          example: 1
+        priceList:
+          type: integer
+          format: int32
+          description: Identificador de la tarifa de precios aplicable.
+          example: 1
+        startDate:
+          type: string
+          format: date-time
+          description: Fecha de inicio del rango de vigencia de la tarifa.
+          example: "2020-06-14T00:00:00Z"
+        endDate:
+          type: string
+          format: date-time
+          description: Fecha de fin del rango de vigencia de la tarifa.
+          example: "2020-12-31T23:59:59Z"
+        price:
+          type: number
+          format: decimal
+          description: Precio final de venta.
+          minimum: 0
+          example: 35.50
+        currency:
+          type: string
+          description: Código ISO 4217 de la moneda.
+          minLength: 3
+          maxLength: 3
+          example: "EUR"
+
+    ApiErrorResponse:
+      type: object
+      description: Estructura estándar de respuesta de error.
+      required:
+        - timestamp
+        - status
+        - error
+        - code
+        - message
+        - path
+        - trace_id
+        - details
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Instante UTC ISO-8601 en que ocurrió el error.
+          example: "2026-07-02T18:30:00Z"
+        status:
+          type: integer
+          description: HTTP status code numérico.
+          example: 400
+        error:
+          type: string
+          description: Nombre estándar del status HTTP.
+          example: "BAD_REQUEST"
+        code:
+          type: string
+          description: Código estable de negocio o técnico, apto para frontend/i18n.
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          description: Mensaje seguro para el cliente. No expone detalles internos.
+          example: "The request contains invalid fields."
+        path:
+          type: string
+          description: Path de la solicitud que generó el error.
+          example: "/api/prices"
+        trace_id:
+          type: string
+          description: Identificador de correlación de la solicitud.
+          example: "4f0f6d2c6b1d4c8a"
+        details:
+          type: array
+          description: |
+            Arreglo de detalles adicionales del error. Puede estar vacío.
+            Para errores de validación de campos, incluye información por campo.
+          items:
+            $ref: '#/components/schemas/ApiErrorDetail'
+
+    ApiErrorDetail:
+      type: object
+      description: Detalle de error para un campo o constraint específico.
+      required:
+        - field
+        - code
+        - message
+      properties:
+        field:
+          type: string
+          description: Nombre del campo que generó el error.
+          example: "applicationDate"
+        code:
+          type: string
+          description: Código de error específico del campo.
+          example: "INVALID_FORMAT"
+        message:
+          type: string
+          description: Mensaje descriptivo del error del campo.
+          example: "must match ISO-8601 format yyyy-MM-dd'T'HH:mm:ss"
+        rejected_value:
+          type: string
+          description: Valor rechazado (solo si no expone datos sensibles).
+          nullable: true
+          example: "invalid-date"
+
+  responses:
+    PriceSuccessResponse:
+      description: Precio aplicable encontrado correctamente.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PriceResponse'
+          example:
+            productId: 35455
+            brandId: 1
+            priceList: 1
+            startDate: "2020-06-14T00:00:00Z"
+            endDate: "2020-12-31T23:59:59Z"
+            price: 35.50
+            currency: "EUR"
+
+    BadRequestResponse:
+      description: |
+        Solicitud mal formada. Parámetros ausentes, tipos inválidos o formato incorrecto.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorResponse'
+          example:
+            timestamp: "2026-07-02T18:30:00Z"
+            status: 400
+            error: "BAD_REQUEST"
+            code: "VALIDATION_ERROR"
+            message: "The request contains invalid fields."
+            path: "/api/prices"
+            trace_id: "4f0f6d2c6b1d4c8a"
+            details:
+              - field: "applicationDate"
+                code: "REQUIRED"
+                message: "must not be null"
+                rejected_value: null
+
+    NotFoundResponse:
+      description: |
+        No se encontró ninguna tarifa aplicable para los parámetros proporcionados.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorResponse'
+          example:
+            timestamp: "2026-07-02T18:30:00Z"
+            status: 404
+            error: "NOT_FOUND"
+            code: "PRICE_NOT_FOUND"
+            message: "No applicable price found for the given parameters."
+            path: "/api/prices"
+            trace_id: "a1b2c3d4e5f6g7h8"
+            details: []
+
+    InternalServerErrorResponse:
+      description: Error interno inesperado del servidor.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiErrorResponse'
+          example:
+            timestamp: "2026-07-02T18:30:00Z"
+            status: 500
+            error: "INTERNAL_SERVER_ERROR"
+            code: "INTERNAL_ERROR"
+            message: "An unexpected error occurred."
+            path: "/api/prices"
+            trace_id: "z9y8x7w6v5u4t3s2"
+            details: []

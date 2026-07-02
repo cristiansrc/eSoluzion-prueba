@@ -1,0 +1,26 @@
+FROM eclipse-temurin:21-jdk-alpine AS builder
+WORKDIR /app
+
+# Copiar archivos de build
+COPY backend/build.gradle.kts backend/settings.gradle.kts ./
+COPY backend/gradlew backend/gradlew ./
+COPY backend/gradle ./gradle
+
+# Copiar código fuente
+COPY backend/src ./src
+
+# Copiar OpenAPI spec para generación de código
+COPY docs/api/pricing-api.yaml ./src/main/resources/openapi.yaml
+
+# Descargar dependencias y compilar (sin tests)
+RUN ./gradlew build --no-daemon -x test
+
+# --- Imagen runtime ---
+FROM eclipse-temurin:21-jre-alpine AS runtime
+WORKDIR /app
+
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

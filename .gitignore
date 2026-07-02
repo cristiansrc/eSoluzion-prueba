@@ -1,0 +1,121 @@
+# ============================================
+# eSoluzion Pricing System — .gitignore
+# ============================================
+
+# ────────────────────────────────────────────
+#  Java / Gradle
+# ────────────────────────────────────────────
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+backend/build/
+backend/out/
+backend/.gradle/
+backend/gradle/wrapper/gradle-wrapper.jar
+backend/gradle/wrapper/gradle-wrapper.properties
+backend/gradlew
+backend/gradlew.bat
+backend/gradle/gradle-wrapper.jar
+
+# ────────────────────────────────────────────
+#  Node / React / Vite (frontend)
+# ────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/.cache/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/package-lock.json
+frontend/yarn.lock
+frontend/coverage/
+
+# ────────────────────────────────────────────
+#  IDE / Editor
+# ────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.sublime-project
+.idea_modules/
+*.vscode/
+
+# ────────────────────────────────────────────
+#  OS / Filesystem
+# ────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ────────────────────────────────────────────
+#  Project-specific
+# ────────────────────────────────────────────
+
+# Knowledge graph output
+graphify-out/
+graphify-out/*.json
+graphify-out/*.html
+graphify-out/*.md
+
+# Logs
+*.log
+backend/logs/
+frontend/logs/
+
+# Environment / Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.cert
+
+# Docker
+infra/.env
+
+# Temp files
+*.tmp
+*.temp
+.cache/
+tmp/
+
+# Database (H2 files - only if running in file mode)
+*.mv.db
+*.trace.db
+
+# JaCoCo coverage reports
+backend/build/reports/
+backend/build/jacoco/
+
+# OpenAPI generated code (if enabled in future)
+backend/src/generated/
+
+# Editor configs
+*.orig
+*.bak
