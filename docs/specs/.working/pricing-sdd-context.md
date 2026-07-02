@@ -1,6 +1,6 @@
 # Shared Context — Increment 001: Pricing API
 
-> **Lifecycle status:** `validated-not-executed`
+> **Lifecycle status:** `done`
 > **Increment name:** pricing-api
 > **Created:** 2026-07-02
 > **Planner agent:** planner (qwen3.7-plus)
@@ -11,10 +11,10 @@
 
 | Field | Value |
 |-------|-------|
-| **Status** | `validated-not-executed` |
-| **Phase** | Human-approved. All findings resolved (8 fixes applied: B1 converter, H1-H3 specs, M1-M3 docs, L1 description). |
+| **Status** | `done` |
+| **Phase** | Incremento completado. Backend implementado, 56 tests, 100% cobertura, Docker listo. Commit `27e13cc` en master. |
 | **Blocked by** | None |
-| **Next gate** | Task Decomposer → Executor → Test Architect |
+| **Next gate** | Incremento 002: Frontend React + minimalist-ui |
 
 ---
 

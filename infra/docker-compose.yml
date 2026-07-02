@@ -15,7 +15,7 @@ services:
   pricing-console:
     build:
       context: ../
-      dockerfile: infra/Dockerfile.frontend
+      dockerfile: frontend/Dockerfile
     ports:
       - "3000:80"
     depends_on:
