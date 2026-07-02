@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 
 const TEST_CASES = [
   { id: 'T1', date: '2020-06-14T10:00:00', product: '35455', brand: '1', expected: '35.50€', priceList: 1 },
@@ -27,11 +27,8 @@ function App() {
   const [customError, setCustomError] = useState(null)
   const [customLoading, setCustomLoading] = useState(false)
   const [log, setLog] = useState([])
-  const logEndRef = useRef(null)
-
   const addLog = (entry) => {
     setLog(prev => [entry, ...prev])
-    setTimeout(() => logEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
   }
 
   const executeTest = async (tc) => {
@@ -241,7 +238,6 @@ function App() {
             <div className="log-response" style={entry.isError ? { color: '#9F2F2D' } : {}}>{entry.response}</div>
           </div>
         ))}
-        <div ref={logEndRef} />
       </div>
 
       <footer className="footer">
