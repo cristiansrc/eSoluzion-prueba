@@ -94,6 +94,7 @@ function App() {
           <div className="test-table-header">
             <span>Test</span>
             <span>Fecha</span>
+            <span>Hora</span>
             <span>Esperado</span>
             <span>Obtenido</span>
             <span>Estado</span>
@@ -108,7 +109,8 @@ function App() {
             return (
               <div key={tc.id} className={`test-table-row ${passed ? 'row-pass' : ''}`}>
                 <span className="test-id">{tc.id}</span>
-                <span className="test-date">{tc.date}</span>
+                <span className="test-date">{tc.date.split('T')[0]}</span>
+                <span className="test-time">{tc.date.split('T')[1]}</span>
                 <span className="test-expected">{tc.expected}</span>
                 <span className="test-obtained">
                   {isLoading ? '...' : error ? 'Error' : result ? `${result.price}€` : '—'}
