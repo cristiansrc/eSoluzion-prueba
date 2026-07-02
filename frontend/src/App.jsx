@@ -20,7 +20,8 @@ function App() {
   const [loading, setLoading] = useState({})
   const [errors, setErrors] = useState({})
   const [customDate, setCustomDate] = useState('2020-06-14')
-  const [customTime, setCustomTime] = useState('10:00')
+  const [customHour, setCustomHour] = useState('10')
+  const [customMinute, setCustomMinute] = useState('00')
   const [customProduct, setCustomProduct] = useState('35455')
   const [customBrand, setCustomBrand] = useState('1')
   const [customResult, setCustomResult] = useState(null)
@@ -68,7 +69,7 @@ function App() {
     setCustomError(null)
     setCustomResult(null)
 
-    const applicationDate = `${customDate}T${customTime}:00`
+    const applicationDate = `${customDate}T${customHour}:${customMinute}:00`
 
     try {
       const params = new URLSearchParams({ applicationDate, productId: customProduct, brandId: customBrand })
@@ -159,10 +160,17 @@ function App() {
                 <input id="cDate" type="date" value={customDate}
                   onChange={(e) => setCustomDate(e.target.value)} />
               </div>
-              <div className="field field-time">
-                <label htmlFor="cTime">Hora</label>
-                <input id="cTime" type="time" value={customTime} step="60"
-                  onChange={(e) => setCustomTime(e.target.value)} />
+              <div className="field-time-group">
+                <label>Hora</label>
+                <div className="field-time-inputs">
+                  <input type="number" min="0" max="23" value={customHour}
+                    onChange={(e) => setCustomHour(e.target.value.padStart(2, '0').slice(-2))}
+                    placeholder="HH" className="time-num" />
+                  <span className="time-sep">:</span>
+                  <input type="number" min="0" max="59" value={customMinute}
+                    onChange={(e) => setCustomMinute(e.target.value.padStart(2, '0').slice(-2))}
+                    placeholder="mm" className="time-num" />
+                </div>
               </div>
             </div>
             <div className="field-row">

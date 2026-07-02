@@ -358,7 +358,44 @@ input:focus {
   padding: 24px 0;
 }
 
-/* Time input más angosto */
-.field-time input {
-  width: 100%;
+/* Time inputs numéricos */
+.field-time-group { margin-bottom: 16px; }
+
+.field-time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.time-num {
+  width: 60px;
+  text-align: center;
+  padding: 10px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg);
+  transition: border-color 0.2s;
+  -moz-appearance: textfield;
+}
+
+.time-num::-webkit-outer-spin-button,
+.time-num::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.time-num:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.time-sep {
+  font-family: var(--font-sans);
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: var(--muted);
+  padding: 0 4px;
 }
