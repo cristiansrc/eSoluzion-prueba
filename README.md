@@ -212,12 +212,17 @@ El backend sigue **Arquitectura Hexagonal** (Puertos y Adaptadores) con las sigu
 
 ## Documentación del proyecto
 
-| Recurso | Ruta |
-|---------|------|
-| OpenAPI canónico | `docs/api/pricing-api.yaml` |
-| Shared Context SDD | `docs/specs/.working/pricing-sdd-context.md` |
-| Delta Spec | `docs/specs/increment-001-pricing-api.md` |
-| Task Board | `docs/specs/tasks/task-board-increment-001.md` |
-| Decision Records | `docs/architecture/decision-records/ADR-00*.md` |
-| System Landscape | `docs/architecture/system-landscape.md` |
-| Integration Map | `docs/architecture/integration-map.md` |
+| Recurso | Ruta | Descripción |
+|---------|------|-------------|
+| OpenAPI canónico | `docs/api/pricing-api.yaml` | Contrato OpenAPI 3.0.3. Fuente de verdad del API. Define endpoint `/api/prices`, schemas `PriceResponse`, `ApiErrorResponse` y códigos de error. |
+| Shared Context SDD | `docs/specs/.working/pricing-sdd-context.md` | Contexto compartido del incremento. Contiene estado actual, artefactos canónicos, decisiones bloqueadas (D1–D14) y aprobaciones. |
+| Delta Spec | `docs/specs/increment-001-pricing-api.md` | Especificación detallada del Incremento 001. Incluye modelo de dominio, puertos, casos de uso, adaptadores, configuración, tests y criterios de aceptación. |
+| Task Board | `docs/specs/tasks/task-board-increment-001.md` | Descomposición en 16 tareas atómicas con dependencias, archivos, criterios de aceptación y agente asignado. |
+| ADR-001 | `docs/architecture/decision-records/ADR-001-project-structure.md` | Decisión de estructura monorepo con módulos backend/, frontend/, infra/ y docs/. |
+| ADR-002 | `docs/architecture/decision-records/ADR-002-priority-resolution-strategy.md` | Estrategia SQL-first para resolución de prioridad de tarifas con `ORDER BY priority DESC` y `Pageable` para LIMIT 1. |
+| ADR-003 | `docs/architecture/decision-records/ADR-003-date-type-selection.md` | Selección de `LocalDateTime` sin zona horaria, con `Z` opcional para compatibilidad RFC 3339 y converter personalizado. |
+| ADR-004 | `docs/architecture/decision-records/ADR-004-openapi-generator.md` | Generación de interfaces REST y DTOs mediante OpenAPI Generator con `interfaceOnly: true`. |
+| System Landscape | `docs/architecture/system-landscape.md` | Modelo C4 Level 1 y 2. Define actores (Desarrollador/QA), sistemas (Pricing API, Pricing Console, H2), containers y restricciones. |
+| Context Map | `docs/architecture/context-map.md` | Bounded context "Pricing" con lenguaje ubicuo (Price, Brand, Product, PriceList, Priority). Fuente de verdad y entidades de dominio. |
+| Integration Map | `docs/architecture/integration-map.md` | Contratos de integración: Frontend→Backend (REST), Tests→Backend, Docker networking y Backend→H2. Incluye esquema SQL y 5 casos de prueba. |
+| Workspace Mapping | `docs/architecture/workspace-mapping.md` | Mapeo del workspace monorepo. Estructura de directorios, convenciones de nomenclatura, dependencias entre módulos y configuración Docker. |
