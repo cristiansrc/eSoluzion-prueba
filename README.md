@@ -1,4 +1,4 @@
-# eSoluzion Pricing API
+# Inditex Pricing API
 
 Sistema de consulta de tarifas/precios de productos para cadenas de comercio electrónico.
 Prueba técnica Spring Boot con Arquitectura Hexagonal.
